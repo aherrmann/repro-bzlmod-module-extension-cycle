@@ -1,0 +1,3 @@
+build --enable_bzlmod
+fetch --enable_bzlmod
+query --enable_bzlmod

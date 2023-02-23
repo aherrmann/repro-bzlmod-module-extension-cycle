@@ -1,0 +1,26 @@
+module(name = "module_b")
+
+bazel_dep(name = "module_a")
+local_path_override(module_name = "module_a", path = "../module_a")
+
+# extension_1 = use_extension("@module_a//:extensions.bzl", "extension_1")
+# extension_2 = use_extension("@module_a//:extensions.bzl", "extension_2")
+# $ (cd module_b; bazel fetch @extension_2//:defs.bzl)
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_a TAG module_a_tag_1
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_a TAG module_a_tag_2
+# DEBUG: .../module_a~override/extension_2.bzl:5:10: extension_2 found hello from extension_1, 2 tags
+
+extension_1 = use_extension("@module_a//:extension_1.bzl", "extension_1")
+extension_2 = use_extension("@module_a//:extension_2.bzl", "extension_2")
+# $ (cd module_b; bazel fetch @extension_2//:defs.bzl)
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_b TAG module_b_tag_1
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_b TAG module_b_tag_2
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_a TAG module_a_tag_1
+# DEBUG: .../module_a~override/extension_1.bzl:7:18: MODULE module_a TAG module_a_tag_2
+# DEBUG: .../module_a~override/extension_2.bzl:5:10: extension_2 found hello from extension_1, 4 tags
+
+extension_1.tag(name = "module_b_tag_1")
+extension_1.tag(name = "module_b_tag_2")
+use_repo(extension_1, "extension_1")
+
+use_repo(extension_2, "extension_2")
